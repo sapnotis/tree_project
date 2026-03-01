@@ -1,27 +1,18 @@
-#include "stem.h"
-#include "zero.h"
-#include "cell.h"
-#include <iostream>
+#include "stem.hpp"
+#include "cell.hpp"
 
-stem::stem(float x, float y, cell* parent) : cell(x, y, parent) {
-}
+stem::stem(Coords coords, cell* parent) : cell(coords, parent) { }
 
-stem::~stem() {
-}
-
-void stem::grow() {
-    zero* z = (zero*)getRoot();
-    DATA currentData = getData();
-
-    if (z->spend(2.0f, 1.0f)) {
-        createChild(currentData.x, currentData.y + 1.0, CELL_STEM);
-    }
-}
+stem::~stem() { }
 
 void stem::tick() {
-    if (!isAlive()) return;
-
-    grow();
-    cell::tick();  // дети
+    for (unsigned int i=0; i < this->children.size(); i++)
+        children[i]->tick();
+    
+    if ( this->alive )
+        spread();
 }
-void stem::produce(){}
+
+void stem::spread() {
+    
+}

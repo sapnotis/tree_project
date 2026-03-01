@@ -1,44 +1,42 @@
-#include "POI.h"
-#include "cell.h"
-#include "zero.h"
+#include "POI.hpp"
+#include "cell.hpp"
+#include "producer.hpp"
+#include "root.hpp"
 #include <cmath>
 
-
-POI::POI(float x_, float y_, float r_, char t_){
-    x = x_;
-    y = y_;
+POI::POI(Coords coords_, float r_, char t_){
     radius = r_;
     type = t_;
-    amount = 100;
+    coords = coords_;
 }
 
-POI::~POI() {};
+POI::~POI() { };
 
-void POI::produceRequest(cell* producer, cell* zeroCell) {
-    if (amount <= 0) return;  //ресурс кончился
+Coords POI::getCoords() {
+    return this->coords;
+};
 
-    DATA d = producer->getData();
+char POI::getType() {
+    return this->type;
+};
 
-    float dx = d.x - x;
-    float dy = d.y - y;
-    float dist = std::sqrt(dx * dx + dy * dy);
+void POI::produceRequest(producer* producer) {
+    Coords cellcoords = producer->getData().coords;
+
+    float dx = cellcoords.x - this->coords.x;
+    float dy = cellcoords.y - this->coords.y;
+
+    float dist = std::sqrt(dx*dx + dy*dy);
 
     if (dist <= radius) {
-        amount -= 1;  // ресурс уменьшается
-
-        // отдаем ресурс zero
-        zero* root = (zero*)zeroCell;
-        if (type == 'L') {
-            root->addResource('a', 1);
-        }
-        else {
-            root->addResource('b', 1);
-        }
+        cell* rootptr = producer->getData().root;
+        root* zeroptr = ( root* ) &rootptr;
+        zeroptr->getResource(this->type, 1);
     }
 }
 
-// создаем глобальные массивы??? хзхз тут я не уверена, дипсик помог
-POI* g_lights[10] = { nullptr };
-int g_light_count = 0;
-POI* g_minerals[10] = { nullptr };
-int g_mineral_count = 0;
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ??? пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+// POI* g_lights[10] = { nullptr };
+// int g_light_count = 0;
+// POI* g_minerals[10] = { nullptr };
+// int g_mineral_count = 0;
